@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from 'cors';
 import usersRoutes from "./routes/usersRoutes.js";
 import { notFound, errorHandler } from "./middlewares/errorMiddleware.js";
+import initDB from "./config/db.js"
 
 dotenv.config();
 
@@ -10,11 +11,18 @@ const PORT = process.env.PORT;
 const app = express();
 
 app.use(cors());
+app.use(express.json()); 
 app.use("/api/users", usersRoutes);
+
 
 app.use(notFound);
 app.use(errorHandler)
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-})
+const startServer = async () => {
+  await initDB(); 
+  app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+  });
+};
+
+startServer();
