@@ -1,21 +1,21 @@
-import { useEffect } from "react";
-import axios from "axios";
+import React from 'react'
+import Header from './layout/Header'
+import Footer from './layout/Footer'
+import { Container } from "@mui/material"
+import { Outlet } from "react-router-dom";
 
-function App() {
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios.get("/api");
-      console.log(response.data);
-    };
-    fetchData();
-  }, []);
-  
+const App = () => {
   return (
-    <div className="App">
-      asdasdzzzss
-    </div>
-  );
+    <React.Fragment>
+      <Header />
+        <main>
+          <Container>
+            <Outlet />
+          </Container>
+        </main>
+      <Footer />
+    </React.Fragment>
+  )
 }
 
-export default App;
+export default App
