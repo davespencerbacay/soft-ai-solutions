@@ -6,6 +6,7 @@ import groups from '../tables/groups.js';
 import roles from '../tables/roles.js';
 import modules from '../tables/modules.js';
 import permissions from '../tables/permissions.js';
+import usersGroup from '../tables/users-group.js';
 
 sqlite3.verbose();
 
@@ -21,6 +22,7 @@ const initDB = async () => {
   await roles(db, true);
   await modules(db, true);
   await permissions(db, true);
+  await usersGroup(db, true);
 
   dbInstance = db;
   return db;

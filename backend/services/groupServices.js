@@ -50,10 +50,32 @@ const deleteGroup = async (group) => {
   };
 };
 
+const assignUsersGroup = async (groupId, userId) => {
+  const db = dbo();
+  await db.run(
+    `INSERT INTO UsersGroup (UserId, GroupId) VALUES (?, ?)`,
+    [userId, groupId]
+  );
+};
+
+const getSingleGroupWithUsers = async (groupId) => {
+  const db = dbo();
+  const group = await db.all(
+    `SELECT u.FirstName, u.LastName, u.EmailAddress FROM Users u
+     INNER JOIN UsersGroup ug ON u.UserId = ug.UserId
+     WHERE ug.GroupId = ?`,
+    groupId
+  );
+
+  return group
+}
+
 export default {
   getAllGroups,
   createGroup,
   getSingleGroup,
   updateGroup,
-  deleteGroup
+  deleteGroup,
+  assignUsersGroup,
+  getSingleGroupWithUsers
 };

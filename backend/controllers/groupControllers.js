@@ -1,5 +1,6 @@
 import asyncHandler from "../middlewares/asyncHandler.js";
 import groupServices from "../services/groupServices.js";
+import usersServices from "../services/usersServices.js";
 import InternalError from "../utils/custom-errors/InternalError.js";
 import BadRequestError from "../utils/custom-errors/BadRequestError.js"
 import NotFoundError from "../utils/custom-errors/NotFoundError.js";
@@ -116,10 +117,60 @@ const deleteGroup = asyncHandler(async (req, res) => {
     }
 });
 
+const assignUsersGroup = asyncHandler(async (req, res) => {
+    const { groupId } = req.params;
+    const { userId } = req.body;
+
+    if(!userId) {
+        throw new BadRequestError("[Groups] User ID is required.")
+    }
+
+    const group = await groupServices.getSingleGroup("GroupId", groupId);
+    if(!group) {
+        throw new NotFoundError("[Groups] Group not found.")
+    }
+
+    const user = await usersServices.getSingleUser("UserId", userId);
+    if(!user) {
+        throw new NotFoundError("[Groups] User not found.")
+    }
+    
+    try {
+        const updatedGroup = await groupServices.assignUsersGroup(groupId, userId);
+        res.json(updatedGroup)
+    } catch (error) {
+        console.log(error);
+        throw new InternalError("[Groups] Error encountered while assigning users to a group.");
+    }
+});
+
+const getSingleGroupWithUsers = asyncHandler(async (req, res) => {
+    const { groupId } = req.params;
+
+    const group = await groupServices.getSingleGroup("GroupId", groupId);
+    if(!group) {
+        throw new NotFoundError("[Groups] Group not found.")
+    }
+    
+    try {
+        const members = await groupServices.getSingleGroupWithUsers(groupId);
+        res.json({
+            group: group,
+            members,
+            noOfMembers: members.length
+        });
+    } catch (error) {
+        console.log(error);
+        throw new InternalError("[Groups] Error encountered while fetching users for group.");
+    }
+});
+
 export { 
     getAllGroups,
     createGroup,
     getSingleGroup,
     updateGroup,
-    deleteGroup
+    deleteGroup,
+    assignUsersGroup,
+    getSingleGroupWithUsers
 };
