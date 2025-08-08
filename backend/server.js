@@ -4,6 +4,7 @@ import cors from 'cors';
 import usersRoutes from "./routes/usersRoutes.js";
 import groupRoutes from "./routes/groupRoutes.js";
 import rolesRoutes from "./routes/rolesRoutes.js";
+import modulesRoutes from "./routes/modulesRoutes.js";
 import { notFound, errorHandler } from "./middlewares/errorMiddleware.js";
 import initDB from "./config/db.js"
 
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use("/api/users", usersRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/roles", rolesRoutes);
+app.use("/api/modules", modulesRoutes);
 
 
 app.use(notFound);

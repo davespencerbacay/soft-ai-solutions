@@ -4,11 +4,11 @@ import InternalError from '../utils/InternalError.js';
 import users from '../tables/users.js';
 import groups from '../tables/groups.js';
 import roles from '../tables/roles.js';
+import modules from '../tables/modules.js';
 
 sqlite3.verbose();
 
 let dbInstance;
-
 const initDB = async () => {
   const db = await open({
     filename: './data.sqlite',
@@ -18,6 +18,7 @@ const initDB = async () => {
   await users(db, true);
   await groups(db, true);
   await roles(db, true);
+  await modules(db, true);
 
   dbInstance = db;
   return db;
