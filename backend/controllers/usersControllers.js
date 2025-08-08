@@ -33,7 +33,7 @@ const createUser = asyncHandler(async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await usersServices.getSingleUser("emailAddress", emailAddress);
+    const user = await usersServices.getSingleUser("EmailAddress", emailAddress);
 
     if(user) {
         throw new BadRequestError("[Users] User with this email address already exists.");
@@ -58,7 +58,7 @@ const getSingleUser = asyncHandler(async (req, res) => {
     const { value } = req.params;
     const { key } = req.query;
 
-    const validKeys = ["id", "firstName", "lastName", "emailAddress"];
+    const validKeys = ["UserId", "FirstName", "LastName", "EmailAddress"];
 
     if(!value) {
         throw new BadRequestError("[Users] User identifier is required.")
@@ -80,7 +80,7 @@ const getSingleUser = asyncHandler(async (req, res) => {
 });
 
 const updateUser = asyncHandler(async (req, res) => {
-    const { firstName, lastName, emailAddress } = req.body;
+    const { firstName, lastName, emailAddress, bio } = req.body;
     const { value : id } = req.params;
 
     if(!firstName) {
@@ -93,7 +93,7 @@ const updateUser = asyncHandler(async (req, res) => {
         throw new BadRequestError("[Users] Email address is required.")
     }
 
-    const user = await usersServices.getSingleUser("id", id);
+    const user = await usersServices.getSingleUser("UserId", id);
 
     if(!user) {
         throw new NotFoundError("[Users] User not found.")
@@ -101,11 +101,11 @@ const updateUser = asyncHandler(async (req, res) => {
 
     try {
         const updatedUser = await usersServices.updateUser({
-            id: user.id,
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            emailAddress: req.body.emailAddress,
-            bio: req.body.bio,
+            id: id,
+            firstName: firstName,
+            lastName: lastName,
+            emailAddress: emailAddress,
+            bio: bio,
         });
 
         res.json(updatedUser)
@@ -118,7 +118,7 @@ const updateUser = asyncHandler(async (req, res) => {
 const deleteUser = asyncHandler(async (req, res) => {
     const { value : id } = req.params;
 
-    const user = await usersServices.getSingleUser("id", id);
+    const user = await usersServices.getSingleUser("UserId", id);
 
     if(!user) {
         throw new NotFoundError("[Users] User not found.")
@@ -143,17 +143,17 @@ const authUser = asyncHandler(async (req, res) => {
         throw new BadRequestError("[Users] Password is required.")
     }
 
-    const user = await usersServices.getSingleUser("emailAddress", emailAddress);
+    const user = await usersServices.getSingleUser("EmailAddress", emailAddress);
     if(!user) {
         throw new NotFoundError("[Users] User not found.")
     }
 
-    const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(password, user.Password);
     if (!match) {
         throw new BadRequestError("[Users] Invalid credentials.");
     }
 
-    const token = generateToken(user.id);
+    const token = generateToken(user.UserId);
     res.json({ user, token });
 });
 

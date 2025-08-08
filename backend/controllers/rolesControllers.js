@@ -46,7 +46,7 @@ const getSingleRole = asyncHandler(async (req, res) => {
     const { value } = req.params;
     const { key } = req.query;
 
-    const validKeys = ["id", "name"];
+    const validKeys = ["RoleId", "Name"];
 
     if(!value) {
         throw new BadRequestError("[Roles] Role identifier is required.")
@@ -78,7 +78,7 @@ const updateRole = asyncHandler(async (req, res) => {
         throw new BadRequestError("[Roles] Description is required.")
     }
 
-    const role = await rolesServices.getSingleRole("id", id);
+    const role = await rolesServices.getSingleRole("RoleId", id);
 
     if(!role) {
         throw new NotFoundError("[Roles] Role not found.")
@@ -86,7 +86,7 @@ const updateRole = asyncHandler(async (req, res) => {
 
     try {
         const updatedRole = await rolesServices.updateRole({
-            id: role.id,
+            id: id,
             name,
             description
         });
@@ -101,7 +101,7 @@ const updateRole = asyncHandler(async (req, res) => {
 const deleteRole = asyncHandler(async (req, res) => {
     const { value : id } = req.params;
 
-    const role = await rolesServices.getSingleRole("id", id);
+    const role = await rolesServices.getSingleRole("RoleId", id);
 
     if(!role) {
         throw new NotFoundError("[Roles] Role not found.")

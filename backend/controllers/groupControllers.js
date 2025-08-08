@@ -46,7 +46,7 @@ const getSingleGroup = asyncHandler(async (req, res) => {
     const { value } = req.params;
     const { key } = req.query;
 
-    const validKeys = ["id", "name"];
+    const validKeys = ["GroupId", "Name"];
 
     if(!value) {
         throw new BadRequestError("[Groups] Group identifier is required.")
@@ -78,7 +78,7 @@ const updateGroup = asyncHandler(async (req, res) => {
         throw new BadRequestError("[Groups] Description is required.")
     }
 
-    const group = await groupServices.getSingleGroup("id", id);
+    const group = await groupServices.getSingleGroup("GroupId", id);
 
     if(!group) {
         throw new NotFoundError("[Groups] Group not found.")
@@ -86,7 +86,7 @@ const updateGroup = asyncHandler(async (req, res) => {
 
     try {
         const updatedGroup = await groupServices.updateGroup({
-            id: group.id,
+            id: id,
             name,
             description
         });
@@ -101,7 +101,7 @@ const updateGroup = asyncHandler(async (req, res) => {
 const deleteGroup = asyncHandler(async (req, res) => {
     const { value : id } = req.params;
 
-    const group = await groupServices.getSingleGroup("id", id);
+    const group = await groupServices.getSingleGroup("GroupId", id);
 
     if(!group) {
         throw new NotFoundError("[Groups] Group not found.")

@@ -3,7 +3,7 @@ import generateToken from "../utils/generateToken.js";
 
 const createUser = async ({ firstName, lastName, emailAddress, bio, password }) => {
   const result = await dbo().run(
-    `INSERT INTO users (firstName, lastName, emailAddress, bio, password) VALUES (?, ?, ?, ?, ?)`,
+    `INSERT INTO Users (FirstName, LastName, EmailAddress, Bio, Password) VALUES (?, ?, ?, ?, ?)`,
     [firstName, lastName, emailAddress, bio, password]
   );
 
@@ -14,8 +14,8 @@ const createUser = async ({ firstName, lastName, emailAddress, bio, password }) 
 const getAllUsers = async () => {
   const db = dbo();
   const query = `
-    SELECT id, firstName, lastName, emailAddress, bio, createdDate
-    FROM users
+    SELECT UserId, FirstName, LastName, EmailAddress, Bio, CreatedDate
+    FROM Users
   `;
   return await db.all(query);
 };
@@ -23,7 +23,7 @@ const getAllUsers = async () => {
 const getSingleUser = async (key, value) => {
   const db = dbo();
 
-  const allowedKeys = ['id', 'emailAddress'];
+  const allowedKeys = ['UserId', 'EmailAddress'];
 
   if (!allowedKeys.includes(key)) {
     throw new Error('Invalid search key');
@@ -31,7 +31,7 @@ const getSingleUser = async (key, value) => {
 
   const query = `
     SELECT *
-    FROM users
+    FROM Users
     WHERE ${key} = ?
   `;
 
@@ -42,7 +42,7 @@ const getSingleUser = async (key, value) => {
 const updateUser = async ({ id, firstName, lastName, emailAddress, bio }) => {
   const db = dbo();
   await db.run(
-    `UPDATE users SET firstName = ?, lastName = ?, emailAddress = ?, bio = ? WHERE id = ?`,
+    `UPDATE Users SET FirstName = ?, LastName = ?, EmailAddress = ?, Bio = ? WHERE UserId = ?`,
     [firstName, lastName, emailAddress, bio, id]
   );
 
@@ -58,16 +58,16 @@ const updateUser = async ({ id, firstName, lastName, emailAddress, bio }) => {
 const deleteUser = async (user) => {
   const db = dbo();
   await db.run(
-    `DELETE FROM users WHERE id = ?`,
-    user.id
+    `DELETE FROM Users WHERE UserId = ?`,
+    user.UserId
   );
 
   return {
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    emailAddress: user.emailAddress,
-    bio: user.bio
+    id: user.UserId,
+    firstName: user.FirstName,
+    lastName: user.LastName,
+    emailAddress: user.EmailAddress,
+    bio: user.Bio
   };
 }
 

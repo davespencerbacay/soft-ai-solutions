@@ -2,20 +2,20 @@ import { dbo } from "../config/db.js";
 
 const createGroup = async ({ name, description }) => {
   const result = await dbo().run(
-    `INSERT INTO groups (name, description) VALUES (?, ?)`,
+    `INSERT INTO Groups (Name, Description) VALUES (?, ?)`,
     [name, description]
   );
   return { id: result.lastID, name, description };
 };
 
 const getAllGroups = async () => {
-  return await dbo().all(`SELECT * FROM groups`);
+  return await dbo().all(`SELECT * FROM Groups`);
 };
 
 const getSingleGroup = async (key, value) => {
   const db = dbo();
   const group = await db.get(
-    `SELECT * FROM groups WHERE ${key} = ?`,
+    `SELECT * FROM Groups WHERE ${key} = ?`,
     value
   );
 
@@ -25,7 +25,7 @@ const getSingleGroup = async (key, value) => {
 const updateGroup = async ({ id, name, description }) => {
   const db = dbo();
   await db.run(
-    `UPDATE groups SET name = ?, description = ? WHERE id = ?`,
+    `UPDATE Groups SET Name = ?, Description = ? WHERE GroupId = ?`,
     [name, description, id]
   );
 
@@ -39,14 +39,14 @@ const updateGroup = async ({ id, name, description }) => {
 const deleteGroup = async (group) => {
   const db = dbo();
   await db.run(
-    `DELETE FROM groups WHERE id = ?`,
-    group.id
+    `DELETE FROM Groups WHERE GroupId = ?`,
+    group.GroupId
   );
 
   return {
-    id: group.id,
-    name: group.name,
-    description: group.description
+    id: group.GroupId,
+    name: group.Name,
+    description: group.Description
   };
 };
 

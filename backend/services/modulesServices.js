@@ -2,20 +2,20 @@ import { dbo } from "../config/db.js";
 
 const createModule = async ({ name, description }) => {
   const result = await dbo().run(
-    `INSERT INTO modules (name, description) VALUES (?, ?)`,
+    `INSERT INTO Modules (Name, Description) VALUES (?, ?)`,
     [name, description]
   );
   return { id: result.lastID, name, description };
 };
 
 const getAllModules = async () => {
-  return await dbo().all(`SELECT * FROM modules`);
+  return await dbo().all(`SELECT * FROM Modules`);
 };
 
 const getSingleModule = async (key, value) => {
   const db = dbo();
   const module = await db.get(
-    `SELECT * FROM modules WHERE ${key} = ?`,
+    `SELECT * FROM Modules WHERE ${key} = ?`,
     value
   );
 
@@ -25,7 +25,7 @@ const getSingleModule = async (key, value) => {
 const updateModule = async ({ id, name, description }) => {
   const db = dbo();
   await db.run(
-    `UPDATE modules SET name = ?, description = ? WHERE id = ?`,
+    `UPDATE Modules SET Name = ?, Description = ? WHERE ModuleId = ?`,
     [name, description, id]
   );
 
@@ -39,14 +39,14 @@ const updateModule = async ({ id, name, description }) => {
 const deleteModule = async (module) => {
   const db = dbo();
   await db.run(
-    `DELETE FROM modules WHERE id = ?`,
-    module.id
+    `DELETE FROM Modules WHERE ModuleId = ?`,
+    module.ModuleId
   );
 
   return {
-    id: module.id,
-    name: module.name,
-    description: module.description
+    id: module.ModuleId,
+    name: module.Name,
+    description: module.Description
   };
 };
 

@@ -46,7 +46,7 @@ const getSinglePermission = asyncHandler(async (req, res) => {
     const { value } = req.params;
     const { key } = req.query;
 
-    const validKeys = ["id", "name"];
+    const validKeys = ["PermissionId", "Name"];
 
     if(!value) {
         throw new BadRequestError("[Permissions] Permission identifier is required.")
@@ -78,7 +78,7 @@ const updatePermission = asyncHandler(async (req, res) => {
         throw new BadRequestError("[Permissions] Description is required.")
     }
 
-    const permission = await permissionsServices.getSinglePermission("id", id);
+    const permission = await permissionsServices.getSinglePermission("PermissionId", id);
 
     if(!permission) {
         throw new NotFoundError("[Permissions] Permission not found.")
@@ -86,7 +86,7 @@ const updatePermission = asyncHandler(async (req, res) => {
 
     try {
         const updatedPermission = await permissionsServices.updatePermission({
-            id: permission.id,
+            id: id,
             name,
             description
         });
@@ -101,7 +101,7 @@ const updatePermission = asyncHandler(async (req, res) => {
 const deletePermission = asyncHandler(async (req, res) => {
     const { value : id } = req.params;
 
-    const permission = await permissionsServices.getSinglePermission("id", id);
+    const permission = await permissionsServices.getSinglePermission("PermissionId", id);
 
     if(!permission) {
         throw new NotFoundError("[Permissions] Permission not found.")

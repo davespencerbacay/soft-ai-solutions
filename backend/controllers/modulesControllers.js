@@ -24,7 +24,7 @@ const createModule = asyncHandler(async (req, res) => {
         throw new BadRequestError("[Modules] Description is required.")
     }
 
-    const module = await modulesServices.getSingleModule("name", name);
+    const module = await modulesServices.getSingleModule("Name", name);
 
     if(module) {
         throw new BadRequestError("[Modules] Module with this name already exists.");
@@ -46,7 +46,7 @@ const getSingleModule = asyncHandler(async (req, res) => {
     const { value } = req.params;
     const { key } = req.query;
 
-    const validKeys = ["id", "name"];
+    const validKeys = ["ModuleId", "Name"];
 
     if(!value) {
         throw new BadRequestError("[Modules] Module identifier is required.")
@@ -78,7 +78,7 @@ const updateModule = asyncHandler(async (req, res) => {
         throw new BadRequestError("[Modules] Description is required.")
     }
 
-    const module = await modulesServices.getSingleModule("id", id);
+    const module = await modulesServices.getSingleModule("ModuleId", id);
 
     if(!module) {
         throw new NotFoundError("[Modules] Module not found.")
@@ -86,7 +86,7 @@ const updateModule = asyncHandler(async (req, res) => {
 
     try {
         const updatedModule = await modulesServices.updateModule({
-            id: module.id,
+            id: id,
             name,
             description
         });
@@ -101,7 +101,7 @@ const updateModule = asyncHandler(async (req, res) => {
 const deleteModule = asyncHandler(async (req, res) => {
     const { value : id } = req.params;
 
-    const module = await modulesServices.getSingleModule("id", id);
+    const module = await modulesServices.getSingleModule("ModuleId", id);
 
     if(!module) {
         throw new NotFoundError("[Modules] Module not found.")
