@@ -1,11 +1,17 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import { useGetUsersQuery } from "../../slices/usersApiSlice"
+import Spinner from '../../components/Spinner/Spinner';
+import { Box } from '@mui/material';
 
 const Home = () => {
+  const { isError, isLoading } = useGetUsersQuery();
+
   return (
-    <div>
+    <Box>
       <Link to="/users">Users</Link>
-    </div>
+      <Spinner isLoading={isLoading}/>
+    </Box>
   )
 }
 
