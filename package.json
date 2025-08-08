@@ -1,0 +1,30 @@
+{
+  "name": "soft-ai-solutions",
+  "version": "1.0.0",
+  "description": "A simplified IAM system with a React frontend that enables full CRUD for users, groups, roles, and modules, where users inherit fine-grained module permissions through group-based roles.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "server": "nodemon backend/server.js",
+    "client": "npm start --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davespencerbacay/soft-ai-solutions.git"
+  },
+  "author": "Dave Spencer Bacay",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/davespencerbacay/soft-ai-solutions/issues"
+  },
+  "homepage": "https://github.com/davespencerbacay/soft-ai-solutions#readme",
+  "dependencies": {
+    "concurrently": "^9.2.0",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-async-handler": "^1.2.0",
+    "nodemon": "^3.1.10"
+  }
+}
