@@ -27,13 +27,20 @@ const createUser = asyncHandler(async (req, res) => {
         throw new BadRequestError("[Users] Email address is required.")
     }
 
+    const user = await usersServices.getSingleUser("emailAddress", emailAddress);
+
+    if(user) {
+        throw new BadRequestError("[Users] User with this email address already exists.");
+    }
+
     try {
-        const users = await usersServices.createUser({
+        const newUser = await usersServices.createUser({
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             emailAddress: req.body.emailAddress,
+            bio: req.body.bio,
         });
-        res.json(users);
+        res.json(newUser);
     } catch (error) {
         console.log(error)
         throw new InternalError("[Users] Error encounted in users resource.")
@@ -65,8 +72,64 @@ const getSingleUser = asyncHandler(async (req, res) => {
     res.json(user);
 });
 
+const updateUser = asyncHandler(async (req, res) => {
+    const { firstName, lastName, emailAddress } = req.body;
+    const { value : id } = req.params;
+
+    if(!firstName) {
+        throw new BadRequestError("[Users] First name is required.")
+    }
+    if(!lastName) {
+        throw new BadRequestError("[Users] Last name is required.")
+    }
+    if(!emailAddress) {
+        throw new BadRequestError("[Users] Email address is required.")
+    }
+
+    const user = await usersServices.getSingleUser("id", id);
+
+    if(!user) {
+        throw new NotFoundError("[Users] User not found.")
+    }
+
+    try {
+        const updatedUser = await usersServices.updateUser({
+            id: user.id,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            emailAddress: req.body.emailAddress,
+            bio: req.body.bio,
+        });
+
+        res.json(updatedUser)
+    } catch (error) {
+        console.log(error);
+        throw new InternalError("[Users] Error encountered while updating user.");
+    }
+});
+
+const deleteUser = asyncHandler(async (req, res) => {
+    const { value : id } = req.params;
+
+    const user = await usersServices.getSingleUser("id", id);
+
+    if(!user) {
+        throw new NotFoundError("[Users] User not found.")
+    }
+
+    try {
+        const updatedUser = await usersServices.deleteUser(user);
+        res.json(updatedUser)
+    } catch (error) {
+        console.log(error);
+        throw new InternalError("[Users] Error encountered while deleting user.");
+    }
+});
+
 export { 
     getAllUsers,
     createUser,
-    getSingleUser
+    getSingleUser,
+    updateUser,
+    deleteUser
 };

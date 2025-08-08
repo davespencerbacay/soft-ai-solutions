@@ -21,7 +21,8 @@ app.use(errorHandler)
 const startServer = async () => {
   await initDB(); 
   app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+    console.log(`[Main] Server running at http://localhost:${PORT}`);
+    console.log("[DB] Database initialized.");
   });
 };
 
