@@ -1,0 +1,125 @@
+import asyncHandler from "../middlewares/asyncHandler.js";
+import groupServices from "../services/groupServices.js";
+import InternalError from "../utils/InternalError.js";
+import BadRequestError from "../utils/BadRequestError.js"
+import NotFoundError from "../utils/NotFoundError.js";
+
+const getAllGroups = asyncHandler(async (req, res) => {
+    try {
+        const groups = await groupServices.getAllGroups();
+        res.json(groups);
+    } catch (error) {
+        console.log(error)
+        throw new InternalError("[Groups] Error encounted in groups resource.")
+    }
+});
+
+const createGroup = asyncHandler(async (req, res) => {
+    const { name, description } = req.body;
+
+    if(!name) {
+        throw new BadRequestError("[Groups] Name is required.")
+    }
+    if(!description) {
+        throw new BadRequestError("[Groups] Description is required.")
+    }
+
+    const group = await groupServices.getSingleGroup("name", name);
+
+    if(group) {
+        throw new BadRequestError("[Groups] Group with this name already exists.");
+    }
+
+    try {
+        const newGroup = await groupServices.createGroup({
+            name,
+            description
+        });
+        res.json(newGroup);
+    } catch (error) {
+        console.log(error)
+        throw new InternalError("[Groups] Error encounted in groups resource.")
+    }
+});
+
+const getSingleGroup = asyncHandler(async (req, res) => {
+    const { value } = req.params;
+    const { key } = req.query;
+
+    const validKeys = ["id", "name"];
+
+    if(!value) {
+        throw new BadRequestError("[Groups] Group identifier is required.")
+    }
+    if(!key) {
+        throw new BadRequestError("[Groups] Key is required to identify the group.")
+    }
+
+    if(!validKeys.includes(key)) {
+        throw new BadRequestError("[Groups] Invalid key provided.")
+    }
+
+    const group = await groupServices.getSingleGroup(key, value);
+    if(!group) {
+        throw new NotFoundError("[Groups] Group not found.")
+    }
+
+    res.json(group);
+});
+
+const updateGroup = asyncHandler(async (req, res) => {
+    const { name, description } = req.body;
+    const { value : id } = req.params;
+
+    if(!name) {
+        throw new BadRequestError("[Groups] Name is required.")
+    }
+    if(!description) {
+        throw new BadRequestError("[Groups] Description is required.")
+    }
+
+    const group = await groupServices.getSingleGroup("id", id);
+
+    if(!group) {
+        throw new NotFoundError("[Groups] Group not found.")
+    }
+
+    try {
+        const updatedGroup = await groupServices.updateGroup({
+            id: group.id,
+            name,
+            description
+        });
+
+        res.json(updatedGroup)
+    } catch (error) {
+        console.log(error);
+        throw new InternalError("[Groups] Error encountered while updating group.");
+    }
+});
+
+const deleteGroup = asyncHandler(async (req, res) => {
+    const { value : id } = req.params;
+
+    const group = await groupServices.getSingleGroup("id", id);
+
+    if(!group) {
+        throw new NotFoundError("[Groups] Group not found.")
+    }
+
+    try {
+        const updatedGroup = await groupServices.deleteGroup(group);
+        res.json(updatedGroup)
+    } catch (error) {
+        console.log(error);
+        throw new InternalError("[Groups] Error encountered while deleting group.");
+    }
+});
+
+export { 
+    getAllGroups,
+    createGroup,
+    getSingleGroup,
+    updateGroup,
+    deleteGroup
+};
