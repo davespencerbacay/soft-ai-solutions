@@ -6,7 +6,8 @@ import store from "./store";
 import App from './App';
 import Home from './pages/home/Home';
 import Users from './pages/users/Users';
-
+import NotFound from './pages/not-found/NotFound';
+import "./index.css"
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -14,6 +15,7 @@ const router = createBrowserRouter(createRoutesFromElements(
   <Route path="/" element={<App />}>
     <Route index={true} path='/' element={<Home />} />
     <Route path='/users' element={<Users />} />
+    <Route path='/*' element={<NotFound />} />
   </Route>
 ));
 
