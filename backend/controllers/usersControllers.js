@@ -1,8 +1,10 @@
+import bcrypt from 'bcryptjs';
 import asyncHandler from "../middlewares/asyncHandler.js";
 import usersServices from "../services/usersServices.js";
-import InternalError from "../utils/InternalError.js";
-import BadRequestError from "../utils/BadRequestError.js"
-import NotFoundError from "../utils/NotFoundError.js";
+import InternalError from "../utils/custom-errors/InternalError.js";
+import BadRequestError from "../utils/custom-errors/BadRequestError.js"
+import NotFoundError from "../utils/custom-errors/NotFoundError.js";
+import generateToken from '../utils/generateToken.js';
 
 const getAllUsers = asyncHandler(async (req, res) => {
     try {
@@ -15,7 +17,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 });
 
 const createUser = asyncHandler(async (req, res) => {
-    const { firstName, lastName, emailAddress } = req.body;
+    const { firstName, lastName, emailAddress, password } = req.body;
 
     if(!firstName) {
         throw new BadRequestError("[Users] First name is required.")
@@ -26,7 +28,11 @@ const createUser = asyncHandler(async (req, res) => {
     if(!emailAddress) {
         throw new BadRequestError("[Users] Email address is required.")
     }
+    if(!password) {
+        throw new BadRequestError("[Users] Password is required.")
+    }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = await usersServices.getSingleUser("emailAddress", emailAddress);
 
     if(user) {
@@ -39,6 +45,7 @@ const createUser = asyncHandler(async (req, res) => {
             lastName: req.body.lastName,
             emailAddress: req.body.emailAddress,
             bio: req.body.bio,
+            password: hashedPassword,
         });
         res.json(newUser);
     } catch (error) {
@@ -126,10 +133,35 @@ const deleteUser = asyncHandler(async (req, res) => {
     }
 });
 
+const authUser = asyncHandler(async (req, res) => {
+    const { emailAddress, password } = req.body;
+
+    if(!emailAddress) {
+        throw new BadRequestError("[Users] Email address is required.")
+    }
+    if(!password) {
+        throw new BadRequestError("[Users] Password is required.")
+    }
+
+    const user = await usersServices.getSingleUser("emailAddress", emailAddress);
+    if(!user) {
+        throw new NotFoundError("[Users] User not found.")
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+        throw new BadRequestError("[Users] Invalid credentials.");
+    }
+
+    const token = generateToken(user.id);
+    res.json({ user, token });
+});
+
 export { 
     getAllUsers,
     createUser,
     getSingleUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    authUser
 };

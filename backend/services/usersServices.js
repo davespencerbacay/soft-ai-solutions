@@ -1,24 +1,41 @@
 import { dbo } from "../config/db.js";
+import generateToken from "../utils/generateToken.js";
 
-const createUser = async ({ firstName, lastName, emailAddress, bio }) => {
+const createUser = async ({ firstName, lastName, emailAddress, bio, password }) => {
   const result = await dbo().run(
-    `INSERT INTO users (firstName, lastName, emailAddress, bio) VALUES (?, ?, ?, ?)`,
-    [firstName, lastName, emailAddress, bio]
+    `INSERT INTO users (firstName, lastName, emailAddress, bio, password) VALUES (?, ?, ?, ?, ?)`,
+    [firstName, lastName, emailAddress, bio, password]
   );
-  return { id: result.lastID, firstName, lastName, emailAddress, bio };
+
+  const token = generateToken(result.lastID);
+  return { id: result.lastID, firstName, lastName, emailAddress, bio, token };
 };
 
 const getAllUsers = async () => {
-  return await dbo().all(`SELECT * FROM users`);
+  const db = dbo();
+  const query = `
+    SELECT id, firstName, lastName, emailAddress, bio, createdDate
+    FROM users
+  `;
+  return await db.all(query);
 };
 
 const getSingleUser = async (key, value) => {
   const db = dbo();
-  const user = await db.get(
-    `SELECT * FROM users WHERE ${key} = ?`,
-    value
-  );
 
+  const allowedKeys = ['id', 'emailAddress'];
+
+  if (!allowedKeys.includes(key)) {
+    throw new Error('Invalid search key');
+  }
+
+  const query = `
+    SELECT *
+    FROM users
+    WHERE ${key} = ?
+  `;
+
+  const user = await db.get(query, [value]);
   return user;
 };
 

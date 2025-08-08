@@ -1,8 +1,8 @@
 import asyncHandler from "../middlewares/asyncHandler.js";
 import rolesServices from "../services/rolesServices.js";
-import InternalError from "../utils/InternalError.js";
-import BadRequestError from "../utils/BadRequestError.js"
-import NotFoundError from "../utils/NotFoundError.js";
+import InternalError from "../utils/custom-errors/InternalError.js";
+import BadRequestError from "../utils/custom-errors/BadRequestError.js"
+import NotFoundError from "../utils/custom-errors/NotFoundError.js";
 
 const getAllRoles = asyncHandler(async (req, res) => {
     try {

@@ -1,6 +1,6 @@
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
-import InternalError from '../utils/InternalError.js'; 
+import InternalError from '../utils/custom-errors/InternalError.js'; 
 import users from '../tables/users.js';
 import groups from '../tables/groups.js';
 import roles from '../tables/roles.js';

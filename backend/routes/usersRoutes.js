@@ -1,18 +1,21 @@
 import express from "express";
-import { createUser, deleteUser, getAllUsers, getSingleUser, updateUser } from "../controllers/usersControllers.js";
+import { authUser, createUser, deleteUser, getAllUsers, getSingleUser, updateUser } from "../controllers/usersControllers.js";
+import protect from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
 router
     .route("/")
-    .get(getAllUsers)
+    .get(protect, getAllUsers)
     .post(createUser)
+
+router.post("/login", authUser)
 
 router
     .route("/:value")
-    .get(getSingleUser)
-    .put(updateUser)
-    .delete(deleteUser)
+    .get(protect, getSingleUser)
+    .put(protect, updateUser)
+    .delete(protect, deleteUser)
 
 
 export default router;
