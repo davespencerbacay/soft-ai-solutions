@@ -3,6 +3,7 @@ import { open } from 'sqlite';
 import InternalError from '../utils/InternalError.js'; 
 import users from '../tables/users.js';
 import groups from '../tables/groups.js';
+import roles from '../tables/roles.js';
 
 sqlite3.verbose();
 
@@ -16,6 +17,7 @@ const initDB = async () => {
 
   await users(db, true);
   await groups(db, true);
+  await roles(db, true);
 
   dbInstance = db;
   return db;
