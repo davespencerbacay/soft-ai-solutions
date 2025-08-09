@@ -4,6 +4,7 @@ export const GROUPS_URL = "/api/groups";
 export const ROLES_URL = "/api/roles";
 export const MODULES_URL = "/api/modules";
 export const PERMISSIONS_URL = "/api/permissions";
+export const LOGGED_IN_USER_PERMISSIONS_URL = "/me";
 export const APP_NAME = "IAM-Style Access Control System";
 export const EMPTY = "—";
 

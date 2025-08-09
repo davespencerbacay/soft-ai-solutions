@@ -1,21 +1,31 @@
 import { useGetUserByIdQuery } from "../../slices/usersApiSlice";
+import { useGetLoggedInPermissionsQuery } from "../../slices/loggedInApiSlice";
 import DashboardCard from "../../components/DashboardCard/DashboardCard";
 import { DASHBOARD_DATA } from "../../constants/constants";
 import { useSelector } from "react-redux";
 
 const Dashboard = () => {
-  const user = useSelector((state) => state.auth.userId);
-  const { data } = useGetUserByIdQuery(user);
+  const userId = useSelector((state) => state.auth.userId);
+
+  // Fetch user data
+  const { data: userData } = useGetUserByIdQuery(userId);
+
+  // Fetch logged-in user permissions
+  const { data: permissions, isLoading: permissionsLoading } =
+    useGetLoggedInPermissionsQuery();
+
+    console.log(permissions)
 
   return (
     <div className="space-y-6">
       <div className="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-xl p-6 shadow-lg">
         <h1 className="text-2xl sm:text-3xl font-bold mb-2">
-          Welcome back, {data ? `${data?.FirstName} ${data?.LastName}` : ""}! 👋
+          Welcome back,{" "}
+          {userData ? `${userData?.FirstName} ${userData?.LastName}` : ""}! 👋
         </h1>
-        <p className="text-sm sm:text-base opacity-90 max-w-3xl">
-          Manage users, monitor activities, and configure settings all in one place.  
-          Stay in control with your dashboard.
+        <p className="text-1xl sm:text-2xl font-bold mb-2">
+          You have the following permission{permissions?.length !== 1 && "s"}:{" "}
+          {permissions?.map((perm) => perm.Name).join(", ")}.
         </p>
       </div>
 
