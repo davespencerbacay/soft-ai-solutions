@@ -14,6 +14,7 @@ import Permissions from './pages/permissions/Permissions';
 import "./index.css"
 import Login from './pages/login/Login';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import Register from './pages/register/Register';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -28,6 +29,7 @@ const router = createBrowserRouter(createRoutesFromElements(
       <Route path='/permissions' element={<Permissions />} />
     </Route>
     <Route path='/login' element={<Login />} />
+    <Route path='/register' element={<Register />} />
     <Route path='/*' element={<NotFound />} />
   </Route>
 ));
