@@ -156,7 +156,7 @@ const assignGroupRoles = asyncHandler(async (req, res) => {
     const { groupId } = req.params;
     const { roleIds } = req.body;
 
-    if (!Array.isArray(roleIds) || roleIds.length === 0) {
+    if (!Array.isArray(roleIds)) {
         throw new BadRequestError("[Groups] Role Ids are required.");
     }
 

@@ -120,7 +120,7 @@ const Modules = () => {
         showEllipsis={true}
         menuItems={menuItems}
         onMenuAction={handleMenuAction}
-        countLabel="Count"
+        showCountLabel={false}
       />
 
       <ModuleModal

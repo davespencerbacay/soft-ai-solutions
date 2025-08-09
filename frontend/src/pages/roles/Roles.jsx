@@ -1,18 +1,16 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import ListTable from "../../components/Table/ListTable";
 import {
   useGetRolesWithGroupsQuery,
   useAddRoleMutation,
   useUpdateRoleMutation,
   useDeleteRoleMutation,
-} from "../../slices/rolesApiSlice";  // Assume this exists and mirrors groupsApiSlice
+} from "../../slices/rolesApiSlice";  
 import { ADD_ACTION, EDIT_ACTION } from "../../constants/constants";
-import RoleModal from "./RoleModal";             // Modal for Add/Edit Role
+import RoleModal from "./RoleModal";             
 import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
-import Modal from "../../components/Modal/Modal";
-import Groups from "../groups/Groups";           // Reuse your Groups component inside modal
 
-const Roles = () => {
+const Roles = ({ isReuse, isCheckboxEnabled, checkboxHandler, selectedRoles }) => {
   const { data: roles = [], isLoading, isError } = useGetRolesWithGroupsQuery();
   const [addRole, { isLoading: isAdding }] = useAddRoleMutation();
   const [updateRole, { isLoading: isUpdating }] = useUpdateRoleMutation();
@@ -25,7 +23,6 @@ const Roles = () => {
 
   const [assignGroupModalOpen, setAssignGroupModalOpen] = useState(false);
   const [assignRole, setAssignRole] = useState(null);
-
   const [roleToDelete, setRoleToDelete] = useState(null);
   const [deleteError, setDeleteError] = useState("");
 
@@ -36,9 +33,7 @@ const Roles = () => {
     title: role.Name,
     author: role.Description,
     date: new Date(role.CreatedDate).toLocaleDateString(),
-    avatars: role.Groups
-      ? role.Groups.map((group) => group.Name)
-      : [],
+    avatars: role.Groups ? role.Groups.map((group) => group.Name) : [],
     count: role.Groups ? role.Groups.length : 0,
     id: role.RoleId.toString(),
   }));
@@ -132,12 +127,16 @@ const Roles = () => {
 
   return (
     <div className="p-6 bg-white rounded-lg shadow">
-      <button
-        onClick={openAddModal}
-        className="mb-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-      >
-        Add Role
-      </button>
+      {!isReuse ? (
+        <button
+          onClick={openAddModal}
+          className="mb-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        >
+          Add Role
+        </button>
+      ) : (
+        <React.Fragment />
+      )}
 
       <ListTable
         rows={rows}
@@ -145,6 +144,10 @@ const Roles = () => {
         menuItems={menuItems}
         onMenuAction={handleMenuAction}
         countLabel="Groups"
+        isCheckboxEnabled={isCheckboxEnabled}
+        checkboxHandler={checkboxHandler}
+        selectedIds={selectedRoles}
+        showCountLabel={false}
       />
 
       <RoleModal
@@ -167,14 +170,6 @@ const Roles = () => {
           <p className="mt-2 text-red-600 text-sm font-semibold">{deleteError}</p>
         )}
       </ConfirmationModal>
-
-      <Modal
-        isOpen={assignGroupModalOpen}
-        onClose={closeAssignGroupModal}
-        title={`Assign Groups to ${assignRole?.Name || ''} ${assignRole?.RoleId}`}
-      >
-        <Groups groupId={assignRole?.RoleId} onClose={closeAssignGroupModal} isReuse={true} id={assignRole?.RoleId} />
-      </Modal>
     </div>
   );
 };

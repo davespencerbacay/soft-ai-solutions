@@ -43,8 +43,16 @@ export const groupsApiSlice = apiSlice.injectEndpoints({
         body: { userIds },
       }),
       invalidatesTags: ['Group', 'Users'],
-    })
+    }),
+    assignGroupRoles: builder.mutation({
+      query: ({ groupId, roleIds }) => ({
+        url: `${GROUPS_URL}/${groupId}/roles`,
+        method: 'POST',
+        body: { roleIds },
+      }),
+      invalidatesTags: ['Group', 'Users'],
+    }),
   }),
 });
 
-export const { useGetGroupsWithUsersQuery, useAddGroupMutation, useUpdateGroupMutation, useDeleteGroupMutation, useAssignUsersToGroupMutation } = groupsApiSlice;
+export const { useGetGroupsWithUsersQuery, useAddGroupMutation, useUpdateGroupMutation, useDeleteGroupMutation, useAssignUsersToGroupMutation, useAssignGroupRolesMutation } = groupsApiSlice;

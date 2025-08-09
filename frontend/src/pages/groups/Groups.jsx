@@ -1,29 +1,37 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import ListTable from "../../components/Table/ListTable";
 import {
   useGetGroupsWithUsersQuery,
   useAddGroupMutation,
   useUpdateGroupMutation,
-  useDeleteGroupMutation,   // import delete mutation
+  useDeleteGroupMutation,
+  useAssignGroupRolesMutation,
 } from "../../slices/groupsApiSlice";
 import { ADD_ACTION, EDIT_ACTION } from "../../constants/constants";
 import GroupModal from "./GroupModal";
 import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
 import Users from "../users/Users";
+import Roles from "../roles/Roles"; // import Roles component
 import Modal from "../../components/Modal/Modal";
 
 const Groups = () => {
   const { data: groups = [], isLoading, isError } = useGetGroupsWithUsersQuery();
   const [addGroup, { isLoading: isAdding }] = useAddGroupMutation();
   const [updateGroup, { isLoading: isUpdating }] = useUpdateGroupMutation();
-  const [deleteGroup, { isLoading: isDeleting }] = useDeleteGroupMutation(); // delete mutation hook
+  const [deleteGroup, { isLoading: isDeleting }] = useDeleteGroupMutation();
+  const [assignGroupRoles] = useAssignGroupRolesMutation();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState(ADD_ACTION);
   const [selectedGroup, setSelectedGroup] = useState(null);
+  const [selectedRoles, setSelectedRoles] = useState([]);
   const [modalError, setModalError] = useState("");
+
   const [assignUserModalOpen, setAssignUserModalOpen] = useState(false);
   const [assignGroup, setAssignGroup] = useState(null);
+
+  const [assignRoleModalOpen, setAssignRoleModalOpen] = useState(false);
+  const [assignRoleGroup, setAssignRoleGroup] = useState(null);
 
   const [groupToDelete, setGroupToDelete] = useState(null);
   const [deleteError, setDeleteError] = useState("");
@@ -35,21 +43,22 @@ const Groups = () => {
     title: group.Name,
     author: group.Description,
     date: new Date(group.CreatedDate).toLocaleDateString(),
-    avatars: group.Users
-      ? group.Users.map((user) => `${user.FirstName} ${user.LastName}`)
-      : [],
+    avatars: group.Users ? group.Users.map((user) => `${user.FirstName} ${user.LastName}`) : [],
     count: group.Users ? group.Users.length : 0,
     id: group.GroupId.toString(),
+    badges: group.Roles ? group.Roles.map((role) => role.Name) : [],
   }));
 
   const menuItems = [
     { key: "assign-user", label: "Assign User" },
+    { key: "assign-role", label: "Assign Role" },
     { key: "edit-group", label: "Edit Group" },
     { key: "delete-group", label: "Delete Group" },
   ];
 
   const openAddModal = () => {
     setSelectedGroup(null);
+    setSelectedRoles([]);
     setModalMode(ADD_ACTION);
     setModalError("");
     setModalOpen(true);
@@ -73,6 +82,17 @@ const Groups = () => {
     setAssignGroup(null);
   };
 
+  const openAssignRoleModal = (group) => {
+    setAssignRoleGroup(group);
+    setSelectedRoles(group.Roles ? group.Roles.map(role => role.RoleId) : []);
+    setAssignRoleModalOpen(true);
+  };
+
+  const closeAssignRoleModal = () => {
+    setAssignRoleModalOpen(false);
+    setAssignRoleGroup(null);
+  };
+
   const handleMenuAction = (actionKey, row) => {
     switch (actionKey) {
       case "edit-group":
@@ -84,8 +104,12 @@ const Groups = () => {
         setDeleteError("");
         break;
       case "assign-user":
-        const assignGroup = groups.find((g) => g.GroupId.toString() === row.id);
-        openAssignUserModal(assignGroup);
+        const assignUserGroup = groups.find((g) => g.GroupId.toString() === row.id);
+        openAssignUserModal(assignUserGroup);
+        break;
+      case "assign-role":
+        const assignRoleGroup = groups.find((g) => g.GroupId.toString() === row.id);
+        openAssignRoleModal(assignRoleGroup);
         break;
       default:
         console.log(actionKey, row);
@@ -129,6 +153,43 @@ const Groups = () => {
       console.error(err);
     }
   };
+  
+  // Only trigger API once after state is calculated
+      // assignGroupRoles({
+      //   groupId: assignRoleGroup?.GroupId,
+      //   roleIds: updatedRoles
+      // })
+      //   .unwrap()
+      //   .then(() => {
+      //     console.log("Roles assigned successfully:", updatedRoles);
+      //   })
+      //   .catch((error) => {
+      //     console.error("Failed to assign roles:", error);
+      //   });
+      
+  const toggleCheckbox = (roleId) => {
+    const idNum = parseInt(roleId, 10);
+
+    setSelectedRoles((prevRoles) => {
+      const updatedRoles = prevRoles.includes(idNum)
+        ? prevRoles.filter((id) => id !== idNum) // Remove if unchecked
+        : [...prevRoles, idNum]; // Add if checked
+        assignGroupRoles({
+          groupId: assignRoleGroup?.GroupId,
+          roleIds: updatedRoles
+        })
+        .unwrap()
+        .then(() => {
+          console.log("Roles assigned successfully:", updatedRoles);
+        })
+        .catch((error) => {
+          console.error("Failed to assign roles:", error);
+        });
+      
+      return updatedRoles;
+    });
+  };
+
 
   return (
     <div className="p-6 bg-white rounded-lg shadow">
@@ -168,8 +229,33 @@ const Groups = () => {
         )}
       </ConfirmationModal>
 
-      <Modal isOpen={assignUserModalOpen} onClose={closeAssignUserModal} title={`Assign Users to ${assignGroup?.Name || ''} ${assignGroup?.GroupId}`}>
-        <Users groupId={assignGroup?.GroupId} onClose={closeAssignUserModal} isReuse={true} id={assignGroup?.GroupId} />
+      <Modal
+        isOpen={assignUserModalOpen}
+        onClose={closeAssignUserModal}
+        title={`Assign Users to ${assignGroup?.Name || ''} #${assignGroup?.GroupId}`}
+      >
+        <Users
+          groupId={assignGroup?.GroupId}
+          onClose={closeAssignUserModal}
+          isReuse={true}
+          id={assignGroup?.GroupId}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={assignRoleModalOpen}
+        onClose={closeAssignRoleModal}
+        title={`Assign Roles to ${assignRoleGroup?.Name || ''} #${assignRoleGroup?.GroupId}`}
+      >
+        <Roles
+          groupId={assignRoleGroup?.GroupId}
+          onClose={closeAssignRoleModal}
+          isReuse={true}
+          id={assignRoleGroup?.GroupId}
+          isCheckboxEnabled={true}
+          checkboxHandler={toggleCheckbox}
+          selectedRoles={selectedRoles}
+        />
       </Modal>
     </div>
   );

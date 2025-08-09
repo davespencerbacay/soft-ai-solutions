@@ -16,7 +16,7 @@ const getAllGroupsWithUsers = async () => {
 
   const groups = await db.all(`SELECT * FROM Groups`);
 
-  const groupsWithUsers = await Promise.all(
+  const groupsWithUsersAndRoles = await Promise.all(
     groups.map(async (group) => {
       const users = await db.all(
         `
@@ -29,15 +29,27 @@ const getAllGroupsWithUsers = async () => {
         [group.GroupId]
       );
 
+      const roles = await db.all(
+        `
+        SELECT r.RoleId, r.Name, r.Description
+          FROM Roles r
+          JOIN GroupRoles gr ON r.RoleId = gr.RoleId
+          WHERE gr.GroupId = ?
+        `,
+        [group.GroupId]
+      );
+
       return {
         ...group,
         Users: users || [],
+        Roles: roles || []
       };
     })
   );
 
-  return groupsWithUsers;
+  return groupsWithUsersAndRoles;
 };
+
 
 const getSingleGroup = async (key, value) => {
   const db = dbo();
@@ -116,6 +128,7 @@ const assignUsersGroup = async (groupId, userIds) => {
 const assignGroupRoles = async (groupId, roleIds) => {
   const db = dbo();
 
+  
   // Get existing roles for the group
   const existingRoles = await db.all(
     `SELECT RoleId FROM GroupRoles WHERE GroupId = ?`,

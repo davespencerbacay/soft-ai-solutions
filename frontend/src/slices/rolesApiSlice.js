@@ -27,7 +27,7 @@ export const rolesApiSlice = apiSlice.injectEndpoints({
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Role', id }],
+      invalidatesTags: (result, error, { id }) => [{ type: 'Role', id }, { type: 'Group', id: 'LIST' }],
     }),
     deleteRole: builder.mutation({
       query: (id) => ({
