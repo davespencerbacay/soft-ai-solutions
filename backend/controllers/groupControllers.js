@@ -7,8 +7,14 @@ import BadRequestError from "../utils/custom-errors/BadRequestError.js"
 import NotFoundError from "../utils/custom-errors/NotFoundError.js";
 
 const getAllGroups = asyncHandler(async (req, res) => {
+    const { user } = req.query;
     try {
-        const groups = await groupServices.getAllGroups();
+        let groups;
+        if(user) {
+            groups = await groupServices.getAllGroupsWithUsers();
+        } else {
+            groups = await groupServices.getAllGroups();
+        }
         res.json(groups);
     } catch (error) {
         console.log(error)

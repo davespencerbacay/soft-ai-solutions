@@ -11,6 +11,33 @@ const createGroup = async ({ name, description }) => {
 const getAllGroups = async () => {
   return await dbo().all(`SELECT * FROM Groups`);
 };
+const getAllGroupsWithUsers = async () => {
+  const db = dbo();
+
+  const groups = await db.all(`SELECT * FROM Groups`);
+
+  const groupsWithUsers = await Promise.all(
+    groups.map(async (group) => {
+      const users = await db.all(
+        `
+        SELECT 
+          u.UserId, u.FirstName, u.LastName, u.EmailAddress, u.Bio, u.CreatedDate
+          FROM Users u
+          JOIN UsersGroup ug ON u.UserId = ug.UserId
+          WHERE ug.GroupId = ?
+        `,
+        [group.GroupId]
+      );
+
+      return {
+        ...group,
+        Users: users || [],
+      };
+    })
+  );
+
+  return groupsWithUsers;
+};
 
 const getSingleGroup = async (key, value) => {
   const db = dbo();
@@ -153,5 +180,6 @@ export default {
   assignUsersGroup,
   getSingleGroupWithUsers,
   getSingleGroupWithRoles,
-  assignGroupRoles
+  assignGroupRoles,
+  getAllGroupsWithUsers
 };

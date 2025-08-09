@@ -30,12 +30,14 @@ const getAllUsersWithGroup = async () => {
       Users.EmailAddress, 
       Users.Bio, 
       Users.CreatedDate,
-      Groups.GroupId,
-      Groups.Name AS GroupName,
-      Groups.Description AS GroupDescription
+      GROUP_CONCAT(DISTINCT Groups.GroupId) AS GroupId,
+      GROUP_CONCAT(DISTINCT Groups.Name) AS GroupName,
+      GROUP_CONCAT(DISTINCT Groups.Description) AS GroupDescription
     FROM Users
     LEFT JOIN UsersGroup ON Users.UserId = UsersGroup.UserId
     LEFT JOIN Groups ON UsersGroup.GroupId = Groups.GroupId
+    GROUP BY Users.UserId
+
   `;
   return await db.all(query);
 };
