@@ -3,7 +3,7 @@ import CircleAvatar from "../../components/CircleAvatar/CircleAvatar";
 import { EllipsisVertical } from "lucide-react";
 import Tooltip from "../Tooltip/Tooltip";
 
-const ListTable = ({ rows = [], showEllipsis = false, menuItems = [], onMenuAction }) => {
+const ListTable = ({ rows = [], showEllipsis = false, menuItems = [], onMenuAction, countLabel }) => {
   const [openIndex, setOpenIndex] = useState(null);
   const rootRef = useRef(null);
 
@@ -75,7 +75,7 @@ const ListTable = ({ rows = [], showEllipsis = false, menuItems = [], onMenuActi
           </div>
 
           <div className="flex items-center gap-1 text-gray-500">
-            <span className="text-sm">{row.count} items</span>
+            <span className="text-sm">{row.count} {countLabel}</span>
           </div>
         </div>
       ))}

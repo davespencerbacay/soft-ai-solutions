@@ -11,14 +11,14 @@ const Modal = ({ isOpen, onClose, title, children }) => {
       />
       <div className="fixed inset-0 flex justify-center items-center z-50 pointer-events-none">
         <div
-          className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full pointer-events-auto relative"
+          className="bg-white rounded-lg shadow-lg p-8 max-w-4xl w-full pointer-events-auto relative"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">{title}</h3>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-semibold">{title}</h3>
             <button
               onClick={onClose}
-              className="text-gray-600 hover:text-gray-900 text-xl font-bold"
+              className="text-gray-600 hover:text-gray-900 text-2xl font-bold"
               aria-label="Close modal"
             >
               &times;

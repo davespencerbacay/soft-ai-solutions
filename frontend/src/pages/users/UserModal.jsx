@@ -9,7 +9,6 @@ const UserModal = ({ isOpen, onClose, onSave, mode = ADD_ACTION, initialData = {
   const [password, setPassword] = useState("");
 
   useEffect(() => {
-  console.log("UserModal useEffect", { isOpen, initialData, mode });
     if (isOpen) {
       if (mode === ADD_ACTION) {
         setFirstName("");
