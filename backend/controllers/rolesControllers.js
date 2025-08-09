@@ -5,8 +5,16 @@ import BadRequestError from "../utils/custom-errors/BadRequestError.js"
 import NotFoundError from "../utils/custom-errors/NotFoundError.js";
 
 const getAllRoles = asyncHandler(async (req, res) => {
+    const { permissions } = req.query;
     try {
-        const roles = await rolesServices.getAllRoles();
+        let roles; 
+
+        if(permissions) {
+            roles = await rolesServices.getAllRolesWithPermissions(permissions);
+        } else {
+            roles = await rolesServices.getAllRoles();
+        }
+
         res.json(roles);
     } catch (error) {
         console.log(error)
@@ -67,6 +75,28 @@ const getSingleRole = asyncHandler(async (req, res) => {
     res.json(role);
 });
 
+const assignRolesPermission = asyncHandler(async (req, res) => {
+    const { roleId } = req.params;
+    const { permissionIds } = req.body;
+
+    if (!Array.isArray(permissionIds)) {
+        throw new BadRequestError("[Roles] Permission Ids should be array.");
+    }
+
+    const role = await rolesServices.getSingleRole("RoleId", roleId);
+    if(!role) {
+        throw new NotFoundError("[Roles] Role not found.")
+    }
+
+    try {
+        const updatedRolePermissions = await rolesServices.assignRolePermissions(roleId, permissionIds);
+        res.json(updatedRolePermissions);
+    } catch (error) {
+        console.log(error);
+        throw new InternalError("[Roles] Error encountered while assigning permissions to role.");
+    }
+});
+
 const updateRole = asyncHandler(async (req, res) => {
     const { name, description } = req.body;
     const { value : id } = req.params;
@@ -121,5 +151,6 @@ export {
     createRole,
     getSingleRole,
     updateRole,
-    deleteRole
+    deleteRole,
+    assignRolesPermission
 };
