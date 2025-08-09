@@ -6,6 +6,7 @@ import groupRoutes from "./routes/groupRoutes.js";
 import rolesRoutes from "./routes/rolesRoutes.js";
 import modulesRoutes from "./routes/modulesRoutes.js";
 import permissionsRoutes from "./routes/permissionsRoutes.js";
+import loggedInUserRoutes from "./routes/loggedInUserRoutes.js";
 import { notFound, errorHandler } from "./middlewares/errorMiddleware.js";
 import initDB from "./config/db.js"
 
@@ -16,6 +17,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json()); 
+app.use("/me", loggedInUserRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/roles", rolesRoutes);
