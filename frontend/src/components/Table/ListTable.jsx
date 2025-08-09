@@ -40,9 +40,16 @@ const ListTable = ({ rows = [], showEllipsis = false, menuItems = [], onMenuActi
                           onMenuAction?.(item.key, row);
                           setOpenIndex(null);
                         }}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        disabled={item.disabled}
+                        className={`w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 relative ${item.disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                       >
                         {item.label}
+
+                        {item.disabled && (
+                          <div className="absolute left-full top-1/2 ml-2 -translate-y-1/2 whitespace-nowrap bg-gray-700 text-white text-xs rounded px-2 py-1 z-50">
+                            You have no permission to perform this action.
+                          </div>
+                        )}
                       </button>
                     ))}
                   </div>
