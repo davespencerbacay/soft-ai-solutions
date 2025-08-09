@@ -1,5 +1,14 @@
 import express from "express";
-import { assignUsersGroup, createGroup, deleteGroup, getAllGroups, getSingleGroup, updateGroup, getSingleGroupWithUsers } from "../controllers/groupControllers.js";
+import { 
+    assignUsersGroup, 
+    createGroup, 
+    deleteGroup, 
+    getAllGroups, 
+    getSingleGroup, 
+    updateGroup, 
+    getSingleGroupWithAllDetails,
+    assignGroupRoles
+} from "../controllers/groupControllers.js";
 
 const router = express.Router();
 
@@ -17,7 +26,12 @@ router
 router
     .route("/:groupId/users")
     .post(assignUsersGroup)
-    .get(getSingleGroupWithUsers)
+
+router
+    .route("/:groupId/roles")
+    .post(assignGroupRoles)
+
+router.get("/:groupId/all-details", getSingleGroupWithAllDetails)
 
 
 export default router;

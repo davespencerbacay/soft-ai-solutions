@@ -50,11 +50,73 @@ const deleteGroup = async (group) => {
   };
 };
 
-const assignUsersGroup = async (groupId, userId) => {
+const assignUsersGroup = async (groupId, userIds) => {
   const db = dbo();
-  await db.run(
-    `INSERT INTO UsersGroup (UserId, GroupId) VALUES (?, ?)`,
-    [userId, groupId]
+
+  // Get existing user IDs assigned to this group
+  const existingUsers = await db.all(
+    `SELECT UserId FROM UsersGroup WHERE GroupId = ?`,
+    [groupId]
+  );
+  const existingUserIds = existingUsers.map(row => row.UserId);
+
+  // Remove unselected users
+  const usersToDelete = existingUserIds.filter(id => !userIds.includes(id));
+  if (usersToDelete.length > 0) {
+    await db.run(
+      `DELETE FROM UsersGroup WHERE GroupId = ? AND UserId IN (${usersToDelete.map(() => '?').join(',')})`,
+      [groupId, ...usersToDelete]
+    );
+  }
+
+  // Insert only new users
+  const usersToInsert = userIds.filter(id => !existingUserIds.includes(id));
+  for (const userId of usersToInsert) {
+    await db.run(
+      `INSERT INTO UsersGroup (UserId, GroupId) VALUES (?, ?)`,
+      [userId, groupId]
+    );
+  }
+
+  // Return updated list
+  return db.all(
+    `SELECT * FROM UsersGroup WHERE GroupId = ?`,
+    [groupId]
+  );
+};
+
+
+const assignGroupRoles = async (groupId, roleIds) => {
+  const db = dbo();
+
+  // Get existing roles for the group
+  const existingRoles = await db.all(
+    `SELECT RoleId FROM GroupRoles WHERE GroupId = ?`,
+    [groupId]
+  );
+  const existingRoleIds = existingRoles.map(row => row.RoleId);
+
+  // Determine which roles to delete (not in the new roleIds)
+  const rolesToDelete = existingRoleIds.filter(id => !roleIds.includes(id));
+  if (rolesToDelete.length > 0) {
+    await db.run(
+      `DELETE FROM GroupRoles WHERE GroupId = ? AND RoleId IN (${rolesToDelete.map(() => '?').join(',')})`,
+      [groupId, ...rolesToDelete]
+    );
+  }
+
+  // Determine which roles to insert (not in existing ones)
+  const rolesToInsert = roleIds.filter(id => !existingRoleIds.includes(id));
+  for (const roleId of rolesToInsert) {
+    await db.run(
+      `INSERT INTO GroupRoles (RoleId, GroupId) VALUES (?, ?)`,
+      [roleId, groupId]
+    );
+  }
+
+  return db.all(
+    `SELECT * FROM GroupRoles WHERE GroupId = ?`,
+    [groupId]
   );
 };
 
@@ -70,6 +132,18 @@ const getSingleGroupWithUsers = async (groupId) => {
   return group
 }
 
+const getSingleGroupWithRoles = async (groupId) => {
+  const db = dbo();
+  const group = await db.all(
+    `SELECT r.Name, r.Description FROM Roles r
+     INNER JOIN GroupRoles gr ON r.RoleId = gr.RoleId
+     WHERE gr.GroupId = ?`,
+    groupId
+  );
+
+  return group
+}
+
 export default {
   getAllGroups,
   createGroup,
@@ -77,5 +151,7 @@ export default {
   updateGroup,
   deleteGroup,
   assignUsersGroup,
-  getSingleGroupWithUsers
+  getSingleGroupWithUsers,
+  getSingleGroupWithRoles,
+  assignGroupRoles
 };
