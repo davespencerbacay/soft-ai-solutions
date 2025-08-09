@@ -20,6 +20,26 @@ const getAllUsers = async () => {
   return await db.all(query);
 };
 
+const getAllUsersWithGroup = async () => {
+  const db = dbo();
+  const query = `
+    SELECT 
+      Users.UserId, 
+      Users.FirstName, 
+      Users.LastName, 
+      Users.EmailAddress, 
+      Users.Bio, 
+      Users.CreatedDate,
+      Groups.GroupId,
+      Groups.Name AS GroupName,
+      Groups.Description AS GroupDescription
+    FROM Users
+    LEFT JOIN UsersGroup ON Users.UserId = UsersGroup.UserId
+    LEFT JOIN Groups ON UsersGroup.GroupId = Groups.GroupId
+  `;
+  return await db.all(query);
+};
+
 const getSingleUser = async (key, value) => {
   const db = dbo();
 
@@ -76,5 +96,6 @@ export default {
   createUser,
   getSingleUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  getAllUsersWithGroup
 };

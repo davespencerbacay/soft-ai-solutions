@@ -7,8 +7,15 @@ import NotFoundError from "../utils/custom-errors/NotFoundError.js";
 import generateToken from '../utils/generateToken.js';
 
 const getAllUsers = asyncHandler(async (req, res) => {
+    const { isGroupInclude } = req.query
     try {
-        const users = await usersServices.getAllUsers();
+        let users;
+        if(isGroupInclude) {
+            users = await usersServices.getAllUsersWithGroup();
+        } else {
+            users = await usersServices.getAllUsers();
+        }
+        
         res.json(users);
     } catch (error) {
         console.log(error)
