@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import CircleAvatar from "../../components/CircleAvatar/CircleAvatar";
 import { EllipsisVertical } from "lucide-react";
+import Tooltip from "../Tooltip/Tooltip";
 
 const ListTable = ({ rows = [], showEllipsis = false, menuItems = [], onMenuAction }) => {
   const [openIndex, setOpenIndex] = useState(null);
@@ -63,7 +64,7 @@ const ListTable = ({ rows = [], showEllipsis = false, menuItems = [], onMenuActi
           <div>
             <h3 className="font-medium text-gray-900 truncate">{row.title}</h3>
             <p className="text-sm text-gray-500">
-              {row.author} • {row.date} • {row.id}
+              {row.author} • <Tooltip text={row.date}>{row.date}</Tooltip> • {row.id}
             </p>
           </div>
 

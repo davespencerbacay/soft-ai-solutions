@@ -8,7 +8,8 @@ const navItems = [
   { name: "Users", to: "/users" },
   { name: "Groups", to: "/groups" },
   { name: "Roles", to: "/roles" },
-  { name: "Modules", to: "/modules" }
+  { name: "Modules", to: "/modules" },
+  { name: "Permissions", to: "/permissions" }
 ];
 
 const Header = () => {

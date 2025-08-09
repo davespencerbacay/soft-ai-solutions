@@ -7,10 +7,11 @@ import App from './App';
 import Dashboard from './pages/dashboard/Dashboard';
 import Users from './pages/users/Users';
 import NotFound from './pages/not-found/NotFound';
-import "./index.css"
 import Groups from './pages/groups/Groups';
 import Roles from './pages/roles/Roles';
 import Modules from './pages/modules/Modules';
+import Permissions from './pages/permissions/Permissions';
+import "./index.css"
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -21,6 +22,7 @@ const router = createBrowserRouter(createRoutesFromElements(
     <Route path='/groups' element={<Groups />} />
     <Route path='/roles' element={<Roles />} />
     <Route path='/modules' element={<Modules />} />
+    <Route path='/permissions' element={<Permissions />} />
     <Route path='/*' element={<NotFound />} />
   </Route>
 ));
