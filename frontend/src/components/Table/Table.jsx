@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from "react";
+import { EMPTY } from "../../constants/constants";
 
 const StandardTable = ({ columns, data, pageSize = 5 }) => {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Filtered data
   const filteredData = useMemo(() => {
     if (!search) return data;
     return data.filter((row) =>
@@ -14,7 +14,6 @@ const StandardTable = ({ columns, data, pageSize = 5 }) => {
     );
   }, [search, data]);
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredData.length / pageSize);
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
@@ -22,7 +21,7 @@ const StandardTable = ({ columns, data, pageSize = 5 }) => {
   }, [filteredData, currentPage, pageSize]);
 
   return (
-    <div className="p-4">
+    <div>
       <div className="mb-4">
         <input
           type="text"
@@ -55,13 +54,14 @@ const StandardTable = ({ columns, data, pageSize = 5 }) => {
               paginatedData.map((row, rowIndex) => (
                 <tr key={rowIndex} className="hover:bg-gray-50">
                   {columns.map((col, colIndex) => (
-                    <td
-                      key={colIndex}
-                      className="px-4 py-2 border border-gray-200"
-                    >
-                      {typeof col.accessor === "function"
-                        ? col.accessor(row)
-                        : row[col.accessor]}
+                    <td key={colIndex} className="px-4 py-2 border border-gray-200">
+                      {(() => {
+                        const value = typeof col.accessor === "function"
+                          ? col.accessor(row)
+                          : row[col.accessor];
+
+                        return value || value === 0 ? value : EMPTY;
+                      })()}
                     </td>
                   ))}
                 </tr>

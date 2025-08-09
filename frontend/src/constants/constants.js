@@ -1,6 +1,11 @@
 export const BASE_URL = "http://localhost:5000";
 export const USERS_URL = "/api/users"
 export const APP_NAME = "IAM-Style Access Control System";
+export const EMPTY = "—"
+
+export const ADD_ACTION = "ADD";
+export const EDIT_ACTION = "EDIT";
+export const DELETE_ACTION = "DELETE";
 
 export const DASHBOARD_DATA = [
   {
