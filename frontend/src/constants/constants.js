@@ -1,6 +1,7 @@
 export const BASE_URL = "http://localhost:5000";
 export const USERS_URL = "/api/users"
 export const GROUPS_URL = "/api/groups"
+export const ROLES_URL = "/api/roles"
 export const APP_NAME = "IAM-Style Access Control System";
 export const EMPTY = "—"
 
