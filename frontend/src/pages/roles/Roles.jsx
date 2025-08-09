@@ -5,24 +5,29 @@ import {
   useAddRoleMutation,
   useUpdateRoleMutation,
   useDeleteRoleMutation,
+  useAssignRolesPermissionMutation,
 } from "../../slices/rolesApiSlice";  
 import { ADD_ACTION, EDIT_ACTION } from "../../constants/constants";
 import RoleModal from "./RoleModal";             
 import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
+import Modal from "../../components/Modal/Modal";
+import Permissions from "../permissions/Permissions";
 
 const Roles = ({ isReuse, isCheckboxEnabled, checkboxHandler, selectedRoles }) => {
   const { data: roles = [], isLoading, isError } = useGetRolesWithGroupsQuery();
   const [addRole, { isLoading: isAdding }] = useAddRoleMutation();
   const [updateRole, { isLoading: isUpdating }] = useUpdateRoleMutation();
   const [deleteRole, { isLoading: isDeleting }] = useDeleteRoleMutation();
+  const [assignRolesPermission] = useAssignRolesPermissionMutation();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState(ADD_ACTION);
   const [selectedRole, setSelectedRole] = useState(null);
   const [modalError, setModalError] = useState("");
 
-  const [assignGroupModalOpen, setAssignGroupModalOpen] = useState(false);
-  const [assignRole, setAssignRole] = useState(null);
+  const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false);
+  const [selectedPermissions, setSelectedPermissions] = useState([]);
+
   const [roleToDelete, setRoleToDelete] = useState(null);
   const [deleteError, setDeleteError] = useState("");
 
@@ -36,10 +41,11 @@ const Roles = ({ isReuse, isCheckboxEnabled, checkboxHandler, selectedRoles }) =
     avatars: role.Groups ? role.Groups.map((group) => group.Name) : [],
     count: role.Groups ? role.Groups.length : 0,
     id: role.RoleId.toString(),
+    badges: role.Permissions ? role.Permissions.map((perm) => perm.Name) : [],
   }));
 
   const menuItems = [
-    { key: "assign-group", label: "Assign Group" },
+    { key: "assign-permissions", label: "Assign Permissions" },
     { key: "edit-role", label: "Edit Role" },
     { key: "delete-role", label: "Delete Role" },
   ];
@@ -59,16 +65,6 @@ const Roles = ({ isReuse, isCheckboxEnabled, checkboxHandler, selectedRoles }) =
     setModalOpen(true);
   };
 
-  const openAssignGroupModal = (role) => {
-    setAssignRole(role);
-    setAssignGroupModalOpen(true);
-  };
-
-  const closeAssignGroupModal = () => {
-    setAssignGroupModalOpen(false);
-    setAssignRole(null);
-  };
-
   const handleMenuAction = (actionKey, row) => {
     switch (actionKey) {
       case "edit-role":
@@ -79,9 +75,11 @@ const Roles = ({ isReuse, isCheckboxEnabled, checkboxHandler, selectedRoles }) =
         setRoleToDelete(role);
         setDeleteError("");
         break;
-      case "assign-group":
-        const assignRole = roles.find((r) => r.RoleId.toString() === row.id);
-        openAssignGroupModal(assignRole);
+      case "assign-permissions":
+        const roleToAssign = roles.find((r) => r.RoleId.toString() === row.id);
+        setSelectedRole(roleToAssign);
+        setIsPermissionModalOpen(true);
+        setSelectedPermissions(roleToAssign.Permissions.map((perm) => perm.PermissionId));
         break;
       default:
         console.log(actionKey, row);
@@ -123,6 +121,23 @@ const Roles = ({ isReuse, isCheckboxEnabled, checkboxHandler, selectedRoles }) =
       setDeleteError(err?.data?.message || "Failed to delete role.");
       console.error(err);
     }
+  };
+
+  const toggleCheckbox = (roleId) => {
+    const idNum = parseInt(roleId, 10);
+
+    setSelectedPermissions((prevPermissions) => {
+      const updatedPermissions = prevPermissions.includes(idNum)
+        ? prevPermissions.filter((id) => id !== idNum)
+        : [...prevPermissions, idNum];
+
+        assignRolesPermission({
+          roleId: selectedRole?.RoleId,
+          permissionIds: updatedPermissions
+        })
+        .unwrap()
+      return updatedPermissions;
+    });
   };
 
   return (
@@ -170,6 +185,16 @@ const Roles = ({ isReuse, isCheckboxEnabled, checkboxHandler, selectedRoles }) =
           <p className="mt-2 text-red-600 text-sm font-semibold">{deleteError}</p>
         )}
       </ConfirmationModal>
+
+      <Modal isOpen={isPermissionModalOpen} title={`Assign Permissions to ${selectedRole?.Name || ''}`} onClose={() => setIsPermissionModalOpen(false)}>
+        <Permissions
+          selectedPermissions={selectedPermissions}
+          onChange={setSelectedPermissions}
+          isReuse={true}
+          isCheckboxEnabled={true}
+          checkboxHandler={toggleCheckbox}
+        />
+      </Modal>
     </div>
   );
 };

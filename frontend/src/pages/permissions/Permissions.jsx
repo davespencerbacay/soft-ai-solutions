@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import ListTable from "../../components/Table/ListTable";
 import {
   useGetPermissionsQuery,
@@ -9,7 +9,7 @@ import {
 import PermissionModal from "./PermissionModal";
 import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
 
-const Permissions = () => {
+const Permissions = ({ isReuse, isCheckboxEnabled, checkboxHandler, selectedPermissions }) => {
   const { data: permissions = [], isLoading, isError } = useGetPermissionsQuery();
   const [addPermission] = useAddPermissionMutation();
   const [updatePermission] = useUpdatePermissionMutation();
@@ -108,12 +108,16 @@ const Permissions = () => {
 
   return (
     <div className="p-6 bg-white rounded-lg shadow">
-      <button
-        onClick={openAddModal}
-        className="mb-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-      >
-        Add Permission
-      </button>
+      {isReuse ? (
+        <React.Fragment />
+      ) : (
+        <button
+          onClick={openAddModal}
+          className="mb-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        >
+          Add Permission
+        </button>
+      )}
 
       <ListTable
         rows={rows}
@@ -121,6 +125,10 @@ const Permissions = () => {
         menuItems={menuItems}
         onMenuAction={handleMenuAction}
         showCountLabel={false}
+        isCheckboxEnabled={isCheckboxEnabled}
+        checkboxHandler={checkboxHandler}
+        selectedIds={selectedPermissions}
+        countLabel={false}
       />
 
       <PermissionModal

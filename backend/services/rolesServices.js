@@ -82,13 +82,15 @@ const deleteRole = async (role) => {
 const assignRolePermissions = async (roleId, permissionIds) => {
   const db = dbo();
 
-  // Remove existing permissions
   await db.run(
     `DELETE FROM RolesPermission WHERE RoleId = ?`,
     roleId
   );
 
-  // Assign new permissions
+  if(permissionIds.length === 0) {
+    return;
+  }
+
   const placeholders = permissionIds.map(() => `(?, ?)`).join(", ");
   const sql = `INSERT INTO RolesPermission (RoleId, PermissionId) VALUES ${placeholders}`;
   const params = permissionIds.flatMap(permissionId => [roleId, permissionId]);

@@ -4,7 +4,7 @@ import { apiSlice } from './apiSlice';
 export const rolesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getRolesWithGroups: builder.query({
-      query: () => `${ROLES_URL}?includeGroups=true`, 
+      query: () => `${ROLES_URL}?includeGroups=true&permissions=true`, 
       providesTags: (result = [], error, arg) =>
         result
           ? [
@@ -36,6 +36,14 @@ export const rolesApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: (result, error, id) => [{ type: 'Role', id }, { type: 'Role', id: 'LIST' }],
     }),
+    assignRolesPermission: builder.mutation({
+      query: ({roleId, permissionIds}) => ({
+        url: `${ROLES_URL}/${roleId}/permissions`,
+        method: 'POST',
+        body: { permissionIds: permissionIds },
+      }),
+      invalidatesTags: (result, error, id) => [{ type: 'Role', id }, { type: 'Role', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -44,4 +52,5 @@ export const {
   useAddRoleMutation,
   useUpdateRoleMutation,
   useDeleteRoleMutation,
+  useAssignRolesPermissionMutation,
 } = rolesApiSlice;

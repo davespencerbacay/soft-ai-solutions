@@ -153,19 +153,6 @@ const Groups = () => {
       console.error(err);
     }
   };
-  
-  // Only trigger API once after state is calculated
-      // assignGroupRoles({
-      //   groupId: assignRoleGroup?.GroupId,
-      //   roleIds: updatedRoles
-      // })
-      //   .unwrap()
-      //   .then(() => {
-      //     console.log("Roles assigned successfully:", updatedRoles);
-      //   })
-      //   .catch((error) => {
-      //     console.error("Failed to assign roles:", error);
-      //   });
       
   const toggleCheckbox = (roleId) => {
     const idNum = parseInt(roleId, 10);
