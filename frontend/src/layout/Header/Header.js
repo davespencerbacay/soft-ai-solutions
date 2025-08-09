@@ -1,85 +1,61 @@
-import React from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  Box,
-  Button,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  useTheme,
-  useMediaQuery,
-} from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import { APP_NAME } from '../../constants/constants';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { APP_NAME } from "../../constants/constants";
+import { Menu, X } from "lucide-react";
 
-const navItems = ['Home', 'About', 'Services', 'Contact'];
+const navItems = ["Home", "About", "Services", "Contact"];
 
 const Header = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
-
-  const toggleDrawer = (open) => () => {
-    setDrawerOpen(open);
-  };
-
-  const drawer = (
-    <Box
-      sx={{ width: 250 }}
-      role="presentation"
-      onClick={toggleDrawer(false)}
-      onKeyDown={toggleDrawer(false)}
-    >
-      <List>
-        {navItems.map((text) => (
-          <ListItem button key={text}>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <React.Fragment>
-      <AppBar position="static" sx={{ backgroundColor: '#1976d2' }}>
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {APP_NAME}
-          </Typography>
-          {isMobile ? (
-            <>
-              <IconButton
-                color="inherit"
-                edge="end"
-                onClick={toggleDrawer(true)}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Drawer
-                anchor="right"
-                open={drawerOpen}
-                onClose={toggleDrawer(false)}
-              >
-                {drawer}
-              </Drawer>
-            </>
-          ) : (
-            <Box>
+    <header className="bg-white text-gray-800 shadow-md">
+      <div className="max-w-7xl mx-auto flex justify-between items-center px-4 py-3 md:py-4">
+        <h1 className="text-lg font-semibold">{APP_NAME}</h1>
+
+        <nav className="hidden md:flex gap-6">
+          {navItems.map((item) => (
+            <Link
+              key={item}
+              to={`/${item.toLowerCase()}`}
+              className="hover:text-blue-600 transition-colors"
+            >
+              {item}
+            </Link>
+          ))}
+        </nav>
+
+        <button className="md:hidden" onClick={() => setDrawerOpen(true)}>
+          <Menu className="w-6 h-6 text-gray-800" />
+        </button>
+      </div>
+
+      {drawerOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 z-50">
+          <div className="fixed top-0 right-0 w-64 h-full bg-white text-gray-800 shadow-lg flex flex-col">
+            <div className="flex justify-between items-center p-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold">{APP_NAME}</h2>
+              <button onClick={() => setDrawerOpen(false)}>
+                <X className="w-6 h-6 text-gray-800" />
+              </button>
+            </div>
+
+            <nav className="flex flex-col p-4 gap-4">
               {navItems.map((item) => (
-                <Button key={item} sx={{ color: '#fff' }}>
+                <Link
+                  key={item}
+                  to={`/${item.toLowerCase()}`}
+                  className="hover:text-blue-600 transition-colors"
+                  onClick={() => setDrawerOpen(false)}
+                >
                   {item}
-                </Button>
+                </Link>
               ))}
-            </Box>
-          )}
-        </Toolbar>
-      </AppBar>
-    </React.Fragment>
+            </nav>
+          </div>
+        </div>
+      )}
+    </header>
   );
 };
 

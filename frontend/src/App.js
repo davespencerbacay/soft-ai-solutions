@@ -1,24 +1,22 @@
-import React from 'react'
-import Header from './layout/Header/Header'
-import Footer from './layout/Footer/Footer'
-import { Container } from "@mui/material"
+import React from "react";
+import Header from "./layout/Header/Header";
+import Footer from "./layout/Footer/Footer";
 import { Outlet } from "react-router-dom";
 
 const App = () => {
   return (
-    <React.Fragment>
+    <div className="flex flex-col min-h-screen">
       <Header />
-        <main style={{
-          marginTop: 20,
-          marginBottom: 20
-        }}>
-          <Container>
-            <Outlet />
-          </Container>
-        </main>
-      <Footer />
-    </React.Fragment>
-  )
-}
 
-export default App
+      <main className="flex-grow my-5">
+        <div className="max-w-7xl mx-auto px-4">
+          <Outlet />
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default App;
