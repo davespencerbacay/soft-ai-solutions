@@ -1,4 +1,4 @@
-import { MODULES_URL } from '../constants/constants';
+import { ADD_ACTION, DELETE_ACTION, EDIT_ACTION, MODULES_URL } from '../constants/constants';
 import { apiSlice } from './apiSlice'; 
 
 export const modulesApiSlice = apiSlice.injectEndpoints({
@@ -15,7 +15,7 @@ export const modulesApiSlice = apiSlice.injectEndpoints({
     }),
     addModule: builder.mutation({
       query: (moduleData) => ({
-        url: MODULES_URL,
+        url: `${MODULES_URL}?action=${ADD_ACTION}`,
         method: 'POST',
         body: moduleData,
       }),
@@ -23,7 +23,7 @@ export const modulesApiSlice = apiSlice.injectEndpoints({
     }),
     updateModule: builder.mutation({
       query: ({ id, data }) => ({
-        url: `${MODULES_URL}/${id}`,
+        url: `${MODULES_URL}/${id}?action=${EDIT_ACTION}`,
         method: 'PUT',
         body: data,
       }),
@@ -31,7 +31,7 @@ export const modulesApiSlice = apiSlice.injectEndpoints({
     }),
     deleteModule: builder.mutation({
       query: (id) => ({
-        url: `${MODULES_URL}/${id}`,
+        url: `${MODULES_URL}/${id}?action=${DELETE_ACTION}`,
         method: 'DELETE',
       }),
       invalidatesTags: (result, error, id) => [{ type: 'Module', id }, { type: 'Module', id: 'LIST' }],
