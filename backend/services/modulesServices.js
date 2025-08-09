@@ -9,6 +9,7 @@ const createModule = async ({ name, description }) => {
 };
 
 const getAllModules = async () => {
+  
   return await dbo().all(`SELECT * FROM Modules`);
 };
 
