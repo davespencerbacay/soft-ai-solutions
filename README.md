@@ -56,6 +56,36 @@ Backend: Node.js / Express (API)
 Database: SQLITE
 Auth: JWT-based authentication
 
+## 🚀 Installation
 
+Follow the steps below to set up the project locally.
+
+### 1️⃣ Clone the repository
+```bash
+git clone https://github.com/davespencerbacay/soft-ai-solutions.git
+cd soft-ai-solutions
+```
+
+2️⃣ Install dependencies
+From the root directory and inside of the frontend folder, install all required packages:
+```bash
+  npm install
+```
+
+3️⃣ Start the development server
+
+Run the project in development mode. This will start both the frontend and backend.
+```bash
+  npm run dev
+```
+
+Start the development server
+
+Frontend: http://localhost:3000
+
+Backend: http://localhost:5000
+
+
+    
 
 
