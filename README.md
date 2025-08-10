@@ -32,7 +32,7 @@ List and manage users — includes pagination, search, and edit/delete options.
 
 Users (Alternate View)
 Compact view with additional action buttons for quick management.
-
+![appt](https://github.com/user-attachments/assets/95fecfc3-84c6-4eeb-80cf-1d7bfd9aa078)
 
 Roles Management
 Create and manage roles, assigning different permission sets.
@@ -52,9 +52,7 @@ Fine-tune access rights for each role and module.
 
 Tech Stack
 Frontend: React, TailwindCSS, Redux Toolkit
-
 Backend: Node.js / Express (API)
-
-Database: PostgreSQL / MySQL (configurable)
-
+Database: SQLITE
 Auth: JWT-based authentication
+
